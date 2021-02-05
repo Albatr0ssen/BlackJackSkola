@@ -1,0 +1,90 @@
+*{
+    border: 0;
+    padding: 0;
+    margin: 0;
+    font-size: 1.5vmin;
+}
+
+:root{
+    --header-height: 10vh;
+    --footer-height: var(--header-height);
+    --main-height: 80vh;
+    --card-margin-vh: 0.8vh;
+    --card-margin-vw: 0.7vw;
+}
+
+header{
+    display: flex;
+    background-color: violet;
+    height: var(--header-height);
+}
+
+main{
+    display: grid;
+    grid-template-rows: 1fr 0.01fr 1fr;
+    background-color: green;
+    height: var(--main-height);
+}
+
+footer{
+    background-color: violet;
+    height: var(--footer-height);
+}
+
+#line{
+    display: flex;
+    background-color: black;
+    align-items: center;
+    justify-content: center;
+    color:white;
+}
+
+#dealer-side, #player-side{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card{
+    display: flex;
+    grid-row: 2;
+    grid-column: 2;
+    margin: 1vmin;
+    border-radius: 2vmin;
+
+}
+
+.shown{
+    width: 20vmin;
+    height: 32vmin;
+    background-color: white;
+    background-image: url("https://static-cdn.jtvnw.net/emoticons/v1/70368/3.0");
+    background-repeat: no-repeat;
+    background-size: 10vmin;
+    background-position: center;
+}
+
+.hidden{
+    background-color: blue;
+    width: 19.6vmin;
+    height: 31vmin;
+    border: solid;
+    border-width: 0.4vmin;
+    border-color: white;
+}
+
+.card-num-top{
+    align-self: flex-start;
+    font-size: 2rem;
+    margin-top: var(--card-margin-vh);
+    margin-left: var(--card-margin-vw);
+}
+
+.card-num-bot{
+    font-size: 2rem;
+    align-self: flex-end;
+    width: 100%;
+    text-align: right;
+    margin-bottom: var(--card-margin-vh);
+    margin-right: var(--card-margin-vw);
+}
