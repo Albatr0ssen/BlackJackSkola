@@ -14,7 +14,6 @@
 }
 
 header{
-    display: flex;
     background-color: violet;
     height: var(--header-height);
 }
@@ -32,17 +31,17 @@ footer{
 }
 
 #line{
-    display: flex;
     background-color: black;
+}
+
+.flex-center{
+    display: flex;
     align-items: center;
     justify-content: center;
-    color:white;
 }
 
 #dealer-side, #player-side{
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-wrap: wrap;
 }
 
 .card{
@@ -51,7 +50,6 @@ footer{
     grid-column: 2;
     margin: 1vmin;
     border-radius: 2vmin;
-
 }
 
 .shown{
@@ -87,4 +85,13 @@ footer{
     text-align: right;
     margin-bottom: var(--card-margin-vh);
     margin-right: var(--card-margin-vw);
+}
+
+#hit-button, #stand-button{
+    padding-left: 3vmin;
+    padding-right: 3vmin;
+    padding-top: 1.5vmin;
+    padding-bottom: 1.5vmin;
+    border-radius: 1vmin;
+    margin: 1vmin;
 }
