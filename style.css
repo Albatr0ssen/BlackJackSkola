@@ -95,3 +95,21 @@ footer{
     border-radius: 1vmin;
     margin: 1vmin;
 }
+
+.body{
+    position: relative;
+}
+
+#game-board{
+    background-color: black;
+}
+
+.absolute{
+    position: absolute;
+	left: 0;
+	right: 0;
+	top: 40%;
+    max-width: 10vmin;
+	margin-left: auto;
+ 	margin-right: auto;
+}

@@ -1,3 +1,4 @@
+
 //Starta programmet när spelaren trycker deal knappen
 
 //Ta bort antalet pengar spelaren satsade (local storage)
@@ -13,8 +14,29 @@ let main;
 let footer;
 let dealerSide;
 let playerSide;
+let gameBoard;
+
+body = document.querySelector("body");
+body.innerHTML = '<div id="game-board"></div>';
+gameBoard = document.querySelector("#game-board");
+gameBoard.innerHTML = '<header></header>';
+gameBoard.innerHTML += '<main></main>';
+gameBoard.innerHTML += '<footer class="flex-center"></footer>';
+main = document.querySelector("main");
+main.innerHTML = '<div id="dealer-side" class="flex-center"></div>'
+main.innerHTML += '<div id="line"></div>'
+main.innerHTML += '<div id="player-side" class="flex-center"></div>'
+
+
+function gameMenu(){
+  body.style.background += "black";
+  gameBoard.style.opacity = "0.25";
+  body.class = "absolute";
+  body.innerHTML += '<input id="" class="absolute" type="button" value="START GAME" onclick="gameStart();" />';
+}
 
 function gameStart(){
+  gameBoard.style.opacity = "1";
   body = document.querySelector("body");
   body.innerHTML = '<header></header>';
   body.innerHTML += '<main></main>';
@@ -27,12 +49,16 @@ function gameStart(){
   dealerSide = document.querySelector("#dealer-side");
   playerSide = document.querySelector("#player-side");
   dealerSide.innerHTML += createCard(createNumber(dealerNumber[0]));
-  dealerSide.innerHTML += '<div class="card hidden"></div>';
+  dealerSide.innerHTML += '<div id="hidden-card" class="card hidden"></div>';
   playerSide.innerHTML += createCard(createNumber(playerNumber[0]));
   playerSide.innerHTML += createCard(createNumber(playerNumber[1]));
   footer.innerHTML += '<input id="hit-button" type="button" value="hit" onclick="hit();" />';
   footer.innerHTML += '<input id="hit-button" type="button" value="stand" onclick="stand();" />';
   checkWin(playerScore);
+}
+
+function gameEnd(){
+  footer.innerHTML = '<input id="deal-button" type="button" value="deal" onclick="deal();" />';
 }
 
 function createCard(cardNumber) {
@@ -75,6 +101,7 @@ function checkOver21(userScore){
         for(let x = 0; x < userScore.length; x++) {
             if(userScore[x] == 11){
                 userScore[x] = 1;
+                break;
             }
         }
         
@@ -97,7 +124,17 @@ function checkWin(userScore) {
     userScore = checkOver21(userScore);
     checkBlackJack(userScore);
     console.table(userScore);
-    console.log(totalScore(playerScore));
+    console.log(totalScore(userScore));
+}
+
+function checkSoft17(){
+  for(let x = 0; x < dealerScore.length; x++) {
+    if(dealerScore[x] == 11){
+      console.log("check soft")
+      return true;
+    }
+  }
+  return false;
 }
 
 function hit(){
@@ -107,14 +144,36 @@ function hit(){
   checkWin(playerScore);
 }
 
-function gameMenu(){
-  
+function stand(){
+  console.log("stand")
+  document.getElementById("hidden-card").remove();
+  dealerSide.innerHTML += createCard(createNumber(dealerNumber[1]));
+  footer.innerHTML = "";
+  checkWin(dealerScore);
+  while(true)
+  {
+    if(totalScore(dealerScore) == 17 && checkSoft17() == true){
+      for(let x = 0; x < dealerScore.length; x++) {
+        console.log(x);
+        if(dealerScore[x] == 11){
+          dealerScore[x] = 1;
+          continue;
+        }
+      }
+    }
+
+    else if(totalScore(dealerScore) >= 17){
+      checkWin(dealerScore);
+      break;
+    }
+
+    else if(totalScore(dealerScore) <= 17){
+      dealerNumber[dealerNumber.length] = rng();
+      dealerScore[dealerScore.length] = cardScore[dealerNumber[dealerNumber.length-1]]
+      dealerSide.innerHTML += createCard(createNumber(dealerNumber[dealerNumber.length-1]));
+    }
+  }  
 }
 
-
-
-function gameEnd(){
-  footer.innerHTML = '<input id="deal-button" type="button" value="deal" onclick="deal();" />';
-}
-
-gameStart();
+gameMenu();
+//gameStart();
