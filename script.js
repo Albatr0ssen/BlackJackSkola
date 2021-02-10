@@ -1,5 +1,4 @@
-
-//Starta programmet när spelaren trycker deal knappen
+"use strict";
 
 //Ta bort antalet pengar spelaren satsade (local storage)
 
@@ -10,37 +9,31 @@ let dealerNumber = [rng(), rng()];
 let playerNumber = [rng(), rng()];
 let dealerScore = [cardScore[dealerNumber[0]], cardScore[dealerNumber[1]]];
 let playerScore = [cardScore[playerNumber[0]], cardScore[playerNumber[1]]];
-let main;
-let footer;
-let dealerSide;
-let playerSide;
-let gameBoard;
+let main, footer, dealerSide, playerSide;
+let money = 1000;
 
-body = document.querySelector("body");
+let body = document.querySelector("body");
 body.innerHTML = '<div id="game-board"></div>';
-gameBoard = document.querySelector("#game-board");
+body.innerHTML += '<div id="game-menu"></div>';
+let gameBoard = document.querySelector("#game-board");
+let startMenu = document.querySelector("#game-menu");
 gameBoard.innerHTML = '<header></header>';
 gameBoard.innerHTML += '<main></main>';
 gameBoard.innerHTML += '<footer class="flex-center"></footer>';
-main = document.querySelector("main");
-main.innerHTML = '<div id="dealer-side" class="flex-center"></div>'
-main.innerHTML += '<div id="line"></div>'
-main.innerHTML += '<div id="player-side" class="flex-center"></div>'
-
 
 function gameMenu(){
   body.style.background += "black";
   gameBoard.style.opacity = "0.25";
-  body.class = "absolute";
-  body.innerHTML += '<input id="" class="absolute" type="button" value="START GAME" onclick="gameStart();" />';
+  startMenu.class = "absolute";
+  startMenu.innerHTML += '<input id="start-game-button" class="absolute" type="button" value="START GAME" onclick="gameStart();" />';
 }
 
 function gameStart(){
   gameBoard.style.opacity = "1";
-  body = document.querySelector("body");
-  body.innerHTML = '<header></header>';
-  body.innerHTML += '<main></main>';
-  body.innerHTML += '<footer class="flex-center"></footer>';
+  startMenu.innerHTML = "";
+  gameBoard.innerHTML = '<header></header>';
+  gameBoard.innerHTML += '<main></main>';
+  gameBoard.innerHTML += '<footer class="flex-center"></footer>';
   main = document.querySelector("main");
   footer = document.querySelector("footer");
   main.innerHTML = '<div id="dealer-side" class="flex-center"></div>'
@@ -53,12 +46,12 @@ function gameStart(){
   playerSide.innerHTML += createCard(createNumber(playerNumber[0]));
   playerSide.innerHTML += createCard(createNumber(playerNumber[1]));
   footer.innerHTML += '<input id="hit-button" type="button" value="hit" onclick="hit();" />';
-  footer.innerHTML += '<input id="hit-button" type="button" value="stand" onclick="stand();" />';
+  footer.innerHTML += '<input id="stand-button" type="button" value="stand" onclick="stand();" />';
   checkWin(playerScore);
 }
 
 function gameEnd(){
-  footer.innerHTML = '<input id="deal-button" type="button" value="deal" onclick="deal();" />';
+  footer.innerHTML = '<input id="deal-button" type="button" value="deal" onclick="gameMenu();" />';
 }
 
 function createCard(cardNumber) {
