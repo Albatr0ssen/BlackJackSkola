@@ -1,16 +1,32 @@
 "use strict";
 
 //Ta bort antalet pengar spelaren satsade (local storage)
+let dealerSide, playerSide, playerName, money;
+let storage = window.localStorage;
+storage.clear();
+storage.setItem("name", "joe");
+storage.setItem("money", "1000");
+console.table(storage);
 
-let cardColors = ["♠", "♥", "♦", "♣"];
-let cardNumbers = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "Kn", "Q", "K", "E",];
-let cardScore = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11];
-let dealerNumber = [rng(), rng()];
-let playerNumber = [rng(), rng()];
-let dealerScore = [cardScore[dealerNumber[0]], cardScore[dealerNumber[1]]];
-let playerScore = [cardScore[playerNumber[0]], cardScore[playerNumber[1]]];
-let main, footer, dealerSide, playerSide;
-let money = 1000;
+let card = {
+  colors: ["♠", "♥", "♦", "♣"],
+  numbers: ["2", "3", "4", "5", "6", "7", "8", "9", "10", "Kn", "Q", "K", "E",],
+  value: [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11],
+}
+
+let dealer = {
+  number: [rng(), rng()],
+}
+
+let player = {
+  name: storage.playerName,
+  number: [rng(), rng()],
+  money: storage[3],
+}
+
+dealer.score = [card.value[dealer.number[0]], card.value[dealer.number[1]]];
+player.score = [card.value[player.number[0]], card.value[player.number[1]]];
+
 
 let body = document.querySelector("body");
 body.innerHTML = '<div id="game-board"></div>';
@@ -20,6 +36,11 @@ let startMenu = document.querySelector("#game-menu");
 gameBoard.innerHTML = '<header></header>';
 gameBoard.innerHTML += '<main></main>';
 gameBoard.innerHTML += '<footer class="flex-center"></footer>';
+let header = document.querySelector("header");
+let main = document.querySelector("main");
+let footer = document.querySelector("footer");
+header.innerHTML += storage.money;
+
 
 function gameMenu(){
   body.style.background += "black";
@@ -31,23 +52,18 @@ function gameMenu(){
 function gameStart(){
   gameBoard.style.opacity = "1";
   startMenu.innerHTML = "";
-  gameBoard.innerHTML = '<header></header>';
-  gameBoard.innerHTML += '<main></main>';
-  gameBoard.innerHTML += '<footer class="flex-center"></footer>';
-  main = document.querySelector("main");
-  footer = document.querySelector("footer");
   main.innerHTML = '<div id="dealer-side" class="flex-center"></div>'
   main.innerHTML += '<div id="line"></div>'
   main.innerHTML += '<div id="player-side" class="flex-center"></div>'
   dealerSide = document.querySelector("#dealer-side");
   playerSide = document.querySelector("#player-side");
-  dealerSide.innerHTML += createCard(createNumber(dealerNumber[0]));
+  dealerSide.innerHTML += createCard(createNumber(dealer.number[0]));
   dealerSide.innerHTML += '<div id="hidden-card" class="card hidden"></div>';
-  playerSide.innerHTML += createCard(createNumber(playerNumber[0]));
-  playerSide.innerHTML += createCard(createNumber(playerNumber[1]));
+  playerSide.innerHTML += createCard(createNumber(player.number[0]));
+  playerSide.innerHTML += createCard(createNumber(player.number[1]));
   footer.innerHTML += '<input id="hit-button" type="button" value="hit" onclick="hit();" />';
   footer.innerHTML += '<input id="stand-button" type="button" value="stand" onclick="stand();" />';
-  checkWin(playerScore);
+  checkWin(player.score);
 }
 
 function gameEnd(){
@@ -68,14 +84,14 @@ function createCard(cardNumber) {
 }
 
 function createNumber(number) {
-  let cardNumber = cardNumbers[number];
-  cardNumber += cardColors[rng("Color")];
+  let cardNumber = card.numbers[number];
+  cardNumber += card.colors[rng("Color")];
   return cardNumber;
 }
 
 function rng(max) {
   if (max == undefined) {
-    max = cardNumbers.length;
+    max = card.numbers.length;
   } else if (max == "Color") {
     max = 4;
   }
@@ -84,9 +100,9 @@ function rng(max) {
 
 function totalScore(user) {
   let total = 0;
-  for (let x = 0; x < user.length; x++) {
-    total += user[x];
-  }
+  user.forEach((value) => {
+    total += value; 
+  })
   return total;
 }
 function checkOver21(userScore){
@@ -121,8 +137,8 @@ function checkWin(userScore) {
 }
 
 function checkSoft17(){
-  for(let x = 0; x < dealerScore.length; x++) {
-    if(dealerScore[x] == 11){
+  for(let x = 0; x < dealer.score.length; x++) {
+    if(dealer.score[x] == 11){
       console.log("check soft")
       return true;
     }
@@ -131,39 +147,40 @@ function checkSoft17(){
 }
 
 function hit(){
-  playerNumber[playerNumber.length] = rng();
-  playerScore[playerScore.length] = cardScore[playerNumber[playerNumber.length-1]]
-  playerSide.innerHTML += createCard(createNumber(playerNumber[playerNumber.length-1]));
-  checkWin(playerScore);
+  player.number[player.number.length] = rng();
+  console.log(player.score);
+  player.score[player.score.length] = card.value[player.number[player.number.length-1]];
+  playerSide.innerHTML += createCard(createNumber(player.number[player.number.length-1]));
+  checkWin(player.score);
 }
 
 function stand(){
   console.log("stand")
   document.getElementById("hidden-card").remove();
-  dealerSide.innerHTML += createCard(createNumber(dealerNumber[1]));
+  dealerSide.innerHTML += createCard(createNumber(dealer.number[1]));
   footer.innerHTML = "";
-  checkWin(dealerScore);
+  checkWin(dealer.score);
   while(true)
   {
-    if(totalScore(dealerScore) == 17 && checkSoft17() == true){
-      for(let x = 0; x < dealerScore.length; x++) {
+    if(totalScore(dealer.score) == 17 && checkSoft17() == true){
+      for(let x = 0; x < dealer.score.length; x++) {
         console.log(x);
-        if(dealerScore[x] == 11){
-          dealerScore[x] = 1;
+        if(dealer.score[x] == 11){
+          dealer.score[x] = 1;
           continue;
         }
       }
     }
 
-    else if(totalScore(dealerScore) >= 17){
-      checkWin(dealerScore);
+    else if(totalScore(dealer.score) >= 17){
+      checkWin(dealer.score);
       break;
     }
 
-    else if(totalScore(dealerScore) <= 17){
-      dealerNumber[dealerNumber.length] = rng();
-      dealerScore[dealerScore.length] = cardScore[dealerNumber[dealerNumber.length-1]]
-      dealerSide.innerHTML += createCard(createNumber(dealerNumber[dealerNumber.length-1]));
+    else if(totalScore(dealer.score) <= 17){
+      dealer.number[dealer.number.length] = rng();
+      dealer.score[dealer.score.length] = card.value[dealer.number[dealer.number.length-1]]
+      dealerSide.innerHTML += createCard(createNumber(dealer.number[dealer.number.length-1]));
     }
   }  
 }
