@@ -1,5 +1,5 @@
 "use strict";
-
+//
 //Ta bort antalet pengar spelaren satsade (local storage)
 let dealerSide, playerSide, playerName, money;
 let storage = window.localStorage;
@@ -15,17 +15,16 @@ let card = {
 }
 
 let dealer = {
-  number: [rng(), rng()],
+  number: [],
 }
 
 let player = {
   name: storage.playerName,
-  number: [rng(), rng()],
+  number: [],
   money: storage[3],
 }
 
-dealer.score = [card.value[dealer.number[0]], card.value[dealer.number[1]]];
-player.score = [card.value[player.number[0]], card.value[player.number[1]]];
+resetScore();
 
 
 let body = document.querySelector("body");
@@ -46,10 +45,11 @@ function gameMenu(){
   body.style.background += "black";
   gameBoard.style.opacity = "0.25";
   startMenu.class = "absolute";
-  startMenu.innerHTML += '<input id="start-game-button" class="absolute" type="button" value="START GAME" onclick="gameStart();" />';
+  startMenu.innerHTML += '<span>YOOOOOOOOOOOOOO <input id="start-game-button" class="absolute" type="button" value="START GAME" onclick="gameStart();" /></span>';
 }
 
 function gameStart(){
+  resetScore();
   gameBoard.style.opacity = "1";
   startMenu.innerHTML = "";
   main.innerHTML = '<div id="dealer-side" class="flex-center"></div>'
@@ -87,6 +87,13 @@ function createNumber(number) {
   let cardNumber = card.numbers[number];
   cardNumber += card.colors[rng("Color")];
   return cardNumber;
+}
+
+function resetScore(){
+  player.number = [rng(), rng()];
+  dealer.number = [rng(), rng()];
+  dealer.score = [card.value[dealer.number[0]], card.value[dealer.number[1]]];
+  player.score = [card.value[player.number[0]], card.value[player.number[1]]];
 }
 
 function rng(max) {
