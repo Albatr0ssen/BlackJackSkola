@@ -104,12 +104,27 @@ footer{
     background-color: black;
 }
 
-.absolute{
+.menu{
     position: absolute;
 	left: 0;
 	right: 0;
-	top: 40%;
-    max-width: 10vmin;
+	top: 30%;
+    max-width: 60vmin;
 	margin-left: auto;
  	margin-right: auto;
+    color: white;
+    text-align: center;
+}
+
+.text-align{
+    text-align:center;
+}
+
+.font-size-4vmin{
+    font-size:4vmin;
+}
+
+.bet-amount-text-box{
+    padding: 1vmin;
+    margin: 1vmin;
 }

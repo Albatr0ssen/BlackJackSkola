@@ -1,9 +1,9 @@
 "use strict";
 //
 //Ta bort antalet pengar spelaren satsade (local storage)
-let dealerSide, playerSide, playerName, money;
+let dealerSide, playerSide, playerName, money, startGame, betAmount;
 let storage = window.localStorage;
-storage.clear();
+//storage.clear();
 storage.setItem("name", "joe");
 storage.setItem("money", "1000");
 console.table(storage);
@@ -19,13 +19,10 @@ let dealer = {
 }
 
 let player = {
-  name: storage.playerName,
+  name: storage.name,
   number: [],
-  money: storage[3],
+  money: storage.money,
 }
-
-resetScore();
-
 
 let body = document.querySelector("body");
 body.innerHTML = '<div id="game-board"></div>';
@@ -38,14 +35,26 @@ gameBoard.innerHTML += '<footer class="flex-center"></footer>';
 let header = document.querySelector("header");
 let main = document.querySelector("main");
 let footer = document.querySelector("footer");
-header.innerHTML += storage.money;
-
 
 function gameMenu(){
   body.style.background += "black";
   gameBoard.style.opacity = "0.25";
   startMenu.class = "absolute";
-  startMenu.innerHTML += '<span>YOOOOOOOOOOOOOO <input id="start-game-button" class="absolute" type="button" value="START GAME" onclick="gameStart();" /></span>';
+  startMenu.innerHTML += '<div class="menu"><span class="font-size-4vmin">WELCOME TO BLACK JACK <br> <br> YOU HAVE $' + player.money + '<br> <br></span><form start-game-bet><label class="font-size-4vmin">ENTER BET AMOUNT:<br></label><input class="text-align bet-amount-text-box" type="number" bet-amount><br><button>START</button></form></div>';
+  startGame = document.querySelector("[start-game-bet]");
+  betAmount = document.querySelector("[bet-amount]");
+  startGame.addEventListener("submit", () => {
+    let betAmountInt = parseInt(betAmount.value);
+    if(betAmountInt <= player.money && betAmountInt > 0)
+    {
+      player.money -= betAmountInt;
+      storage.money = player.money;
+      gameStart();
+    }
+    else{
+      return;
+    }
+  },)
 }
 
 function gameStart(){
