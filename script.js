@@ -1,11 +1,8 @@
 "use strict";
-//
-//Ta bort antalet pengar spelaren satsade (local storage)
-let dealerSide, playerSide, playerName, money, startGame, betAmount;
+let dealerSide,playerSide,startGame,betAmount,body,gameBoard,startMenu,header,main,footer,player;
+let message = "WELCOME TO BLACK JACK";
 let storage = window.localStorage;
-//storage.clear();
-storage.setItem("name", "joe");
-storage.setItem("money", "1000");
+storage.clear();
 console.table(storage);
 
 let card = {
@@ -18,43 +15,81 @@ let dealer = {
   number: [],
 }
 
-let player = {
-  name: storage.name,
-  number: [],
-  money: storage.money,
+function startUp(){
+  body = document.querySelector("body");
+  body.innerHTML = '<div id="game-board"></div>';
+  body.innerHTML += '<div id="game-menu"></div>';
+  gameBoard = document.querySelector("#game-board");
+  startMenu = document.querySelector("#game-menu");
+  startMenu.class = "absolute";
+  gameBoard.innerHTML = '<header></header>';
+  gameBoard.innerHTML += '<main></main>';
+  gameBoard.innerHTML += '<footer class="flex-center"></footer>';
+  header = document.querySelector("header");
+  main = document.querySelector("main");
+  footer = document.querySelector("footer");
 }
 
-let body = document.querySelector("body");
-body.innerHTML = '<div id="game-board"></div>';
-body.innerHTML += '<div id="game-menu"></div>';
-let gameBoard = document.querySelector("#game-board");
-let startMenu = document.querySelector("#game-menu");
-gameBoard.innerHTML = '<header></header>';
-gameBoard.innerHTML += '<main></main>';
-gameBoard.innerHTML += '<footer class="flex-center"></footer>';
-let header = document.querySelector("header");
-let main = document.querySelector("main");
-let footer = document.querySelector("footer");
+function login(){
+  shadowBoard();
+  let menuPage = '<div class="menu"><span class="font-size-4vmin">WELCOME TO BLACK JACK <br> <br>'; 
+  menuPage += 'LOGIN <br></span><form login-form><label class="font-size-4vmin">';
+  menuPage += '<input class="text-align bet-amount-text-box" placeholder="Username" type="name" maxlength="12" required username><br>';
+  menuPage += '<button>LOGIN</button></form></div>';
+  startMenu.innerHTML += menuPage;
+  let loginForm = document.querySelector("[login-form]");
+  let username = document.querySelector("[username]");
+  loginForm.addEventListener("submit", (e) => {
+    let usedName = false;
+    Object.keys(storage).forEach(obj => {
+      let parsedObj = JSON.parse(storage[obj]);
+      if(parsedObj.name == username.value){
+        usedName = true;
+        establishUser(parsedObj.name, parsedObj.money);
+      }
+    })
+    if(usedName == false){
+      let user = "user" + (storage.length+1);
+      storage.setItem(user, JSON.stringify({name: username.value, money: "1000"}));
+      establishUser(username.value, 1000);
+    }
+    gameMenu();
+  })
+}
+
+function establishUser(playerName, playerMoney){
+  player = {
+    name: playerName,
+    number: [],
+    money: playerMoney,
+  }
+}
 
 function gameMenu(){
-  body.style.background += "black";
-  gameBoard.style.opacity = "0.25";
-  startMenu.class = "absolute";
-  startMenu.innerHTML += '<div class="menu"><span class="font-size-4vmin">WELCOME TO BLACK JACK <br> <br> YOU HAVE $' + player.money + '<br> <br></span><form start-game-bet><label class="font-size-4vmin">ENTER BET AMOUNT:<br></label><input class="text-align bet-amount-text-box" type="number" bet-amount><br><button>START</button></form></div>';
+  shadowBoard();
+  let menuPage = '<div class="menu"><span class="font-size-4vmin">' + message +  '<br> <br>'; 
+  menuPage += 'YOU HAVE $' + player.money + '<br> <br></span><form start-game-bet><label class="font-size-4vmin">';
+  menuPage += 'ENTER BET AMOUNT:<br></label><input class="text-align bet-amount-text-box" type="number" required bet-amount><br>';
+  menuPage += '<button>START</button></form></div>';
+  startMenu.innerHTML = menuPage;
   startGame = document.querySelector("[start-game-bet]");
   betAmount = document.querySelector("[bet-amount]");
-  startGame.addEventListener("submit", () => {
-    let betAmountInt = parseInt(betAmount.value);
-    if(betAmountInt <= player.money && betAmountInt > 0)
+  startGame.addEventListener("submit", (e) => {
+    if(parseInt(betAmount.value) <= player.money && parseInt(betAmount.value) > 0)
     {
-      player.money -= betAmountInt;
-      storage.money = player.money;
+      player.money -= parseInt(betAmount.value);
+      Object.keys(storage).forEach(obj => {
+        let parsedObj = JSON.parse(storage[obj]);
+        if(parsedObj.name == player.name){
+          storage[obj] = JSON.stringify({name: player.name, money: player.money});
+        }
+      })
       gameStart();
     }
     else{
       return;
     }
-  },)
+  })
 }
 
 function gameStart(){
@@ -76,7 +111,12 @@ function gameStart(){
 }
 
 function gameEnd(){
-  footer.innerHTML = '<input id="deal-button" type="button" value="deal" onclick="gameMenu();" />';
+  gameMenu();
+}
+
+function shadowBoard(){
+  body.style.background += "black";
+  gameBoard.style.opacity = "0.25";
 }
 
 function createCard(cardNumber) {
@@ -121,26 +161,35 @@ function totalScore(user) {
   })
   return total;
 }
-function checkOver21(userScore){
-    if(totalScore(userScore) > 21){
-        for(let x = 0; x < userScore.length; x++) {
-            if(userScore[x] == 11){
-                userScore[x] = 1;
+function checkOver21(user){
+    if(totalScore(user) > 21){
+        for(let x = 0; x < user.length; x++) {
+            if(user[x] == 11){
+                user[x] = 1;
                 break;
             }
         }
-        
     }
-    if(totalScore(userScore) > 21){
-        console.log("busted");
-        gameEnd();
+    if(totalScore(user) > 21){
+      message = "BUSTED";
+      console.log("BUSTED");
+      if(user == dealer.score){
+        balanceChange("won");
+      }
+      gameEnd();
     }
-    return userScore;
+    return user;
 }
 
-function checkBlackJack(userScore){
-  if(totalScore(userScore) == 21){
+function checkBlackJack(user){
+  console.log(user);
+  if(totalScore(user) == 21){
+    message = "BLACKJACK";
     console.log("blackjack")
+    if(user == player.score){
+      console.log("bwack jawck won playert won lol")
+      balanceChange("won");
+    }
     gameEnd();
   }
 }
@@ -148,18 +197,44 @@ function checkBlackJack(userScore){
 function checkWin(userScore) {
     userScore = checkOver21(userScore);
     checkBlackJack(userScore);
-    console.table(userScore);
-    console.log(totalScore(userScore));
 }
 
 function checkSoft17(){
+  console.log("check soft")
   for(let x = 0; x < dealer.score.length; x++) {
     if(dealer.score[x] == 11){
-      console.log("check soft")
       return true;
     }
   }
   return false;
+}
+
+function balanceChange(playerResult){
+  let betAmountInt = parseInt(betAmount.value);
+  if(playerResult == "won"){
+    Object.keys(storage).forEach(obj => {
+      console.log("won")
+      let parsedObj = JSON.parse(storage[obj]);
+      if(parsedObj.name == player.name){
+        player.money += betAmountInt * 2;
+        storage[obj] = JSON.stringify({name: player.name, money: player.money});
+      }
+    })
+  }
+  else if(playerResult == "push"){
+    console.log("NaN?")
+    Object.keys(storage).forEach(obj => {
+      console.log("push")
+      console.log(obj)
+      console.log(storage[obj])
+      let parsedObj = JSON.parse(storage[obj]);
+      if(parsedObj.name == player.name){
+        console.log(player.money);
+        player.money += betAmountInt;
+        storage[obj] = JSON.stringify({name: player.name, money: player.money});
+      }
+    })
+  }
 }
 
 function hit(){
@@ -178,7 +253,9 @@ function stand(){
   checkWin(dealer.score);
   while(true)
   {
+    console.log("whilte ture")
     if(totalScore(dealer.score) == 17 && checkSoft17() == true){
+      console.log("schack woft")
       for(let x = 0; x < dealer.score.length; x++) {
         console.log(x);
         if(dealer.score[x] == 11){
@@ -187,19 +264,50 @@ function stand(){
         }
       }
     }
-
-    else if(totalScore(dealer.score) >= 17){
-      checkWin(dealer.score);
-      break;
-    }
-
     else if(totalScore(dealer.score) <= 17){
-      dealer.number[dealer.number.length] = rng();
-      dealer.score[dealer.score.length] = card.value[dealer.number[dealer.number.length-1]]
-      dealerSide.innerHTML += createCard(createNumber(dealer.number[dealer.number.length-1]));
+      console.log("dealerscoarf <= 17")
+      if(totalScore(dealer.score) > totalScore(player.score)){
+        gameEnd();
+        break;
+      }
+      else{
+        dealer.number[dealer.number.length] = rng();
+        dealer.score[dealer.score.length] = card.value[dealer.number[dealer.number.length-1]]
+        dealerSide.innerHTML += createCard(createNumber(dealer.number[dealer.number.length-1]));
+      }   
+    }
+    else if(totalScore(dealer.score) >= 17){
+      console.log("totscore delar >= 17")
+      console.log(player.score)
+      console.log(dealer.score)
+      if(totalScore(player.score) > totalScore(dealer.score) && totalScore(player.score) < 21){
+        console.log("playuer won")
+        message = "PLAYER WON";
+        balanceChange("won");
+        gameEnd();
+        break;
+      }
+      else if(totalScore(player.score) < totalScore(dealer.score)  && totalScore(dealer.score) < 21){
+        console.log("dealur won")
+        message = "DEALER WON";
+        gameEnd();
+        break;
+      }
+      else if(totalScore(player.score) == totalScore(dealer.score)){
+        console.log("paugs")
+        message = "PUSH";
+        balanceChange("push")
+        gameEnd();
+        break;
+      }
+      else if(totalScore(dealer.score) >= 21){
+        console.log("ceahk win")
+        checkWin(dealer.score);
+        break;
+      }
     }
   }  
 }
 
-gameMenu();
-//gameStart();
+startUp();
+login();
